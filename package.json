@@ -1,7 +1,7 @@
 {
-  "name": "6-nimmt-scoring",
+  "name": "scores",
   "version": "1.0.0",
-  "description": "Scoring app for the card game 6 Nimmt",
+  "description": "Scoring app for games",
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
