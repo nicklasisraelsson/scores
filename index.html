@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>6 Nimmt poäng</title>
+    <style>
+      .player-container {
+        align-items: center;
+      }
+      .flex {
+        display: flex;
+        gap: 1em;
+      }
+      .icon {
+        height: 1em;
+        width: 1em;
+      }
+      .player {
+        margin: 1em;
+      }
+      input:invalid {
+        border: 1px solid red;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="player-container flex">
+        <label id="playerNameLabel" for="playerName">Ny spelare</label>
+        <input type="text" name="playerName" id="playerName" />
+        <button id="playerAdd">Lägg till</button>
+      </div>
+      <div class="score-container" id="playerScores"></div>
+    </main>
+    <script type="module">
+      const playerNameInput = document.getElementById("playerName");
+      const playerScores = document.getElementById("playerScores");
+      const playerAddButton = document.getElementById("playerAdd");
+
+      let players = [];
+
+      const addPlayer = (name) => {
+        const id = Math.max(0, ...players.map((p) => p.id)) + 1;
+
+        players = [...players, { id, name, score: 0 }];
+      };
+
+      const renderPlayers = () => {
+        const playersHtmlString = players.map(
+          (p) =>
+            `<div class="player flex">
+              <div class="name">${p.name}</div>
+              <div id="player${p.id}Score" class="score">${p.score}</div>
+              <div class="newScore">
+                <input
+                  type="number"
+                  name="player${p.id}Input"
+                  id="player${p.id}Input"
+                  inputmode="numeric"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>`
+        );
+        const playerRange = document.createRange();
+        playerRange.selectNode(playerScores);
+        const newPlayerFragment = playerRange.createContextualFragment(
+          `<div>${playersHtmlString.join("")}</div>`
+        );
+        playerScores.replaceChildren(newPlayerFragment.firstChild);
+        players.forEach((player) => {
+          const playerScore = document.getElementById(
+            `player${player.id}Score`
+          );
+          const playerInput = document.getElementById(
+            `player${player.id}Input`
+          );
+          if (!playerInput || !playerScore) return;
+          playerInput.addEventListener("change", () => {
+            const addedScore = +playerInput.value;
+            if (isFinite(addedScore)) {
+              player.score += addedScore;
+            }
+            playerScore.textContent = player.score;
+            playerInput.value = "";
+          });
+        });
+      };
+
+      playerNameInput.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter") return;
+        addPlayer(playerNameInput.value);
+        playerNameInput.value = "";
+        renderPlayers();
+      });
+      playerAddButton.addEventListener("click", () => {
+        addPlayer(playerNameInput.value);
+        playerNameInput.value = "";
+        renderPlayers();
+      });
+    </script>
+  </body>
+</html>

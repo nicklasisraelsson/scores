@@ -1,0 +1,16 @@
+{
+  "name": "6-nimmt-scoring",
+  "version": "1.0.0",
+  "description": "Scoring app for the card game 6 Nimmt",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "html",
+    "javascript",
+    "boardgame"
+  ],
+  "author": "Nicklas Israelsson",
+  "license": "ISC"
+}
