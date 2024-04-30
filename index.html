@@ -23,6 +23,7 @@
         border: 1px solid grey;
       }
       .app-container {
+        flex: 1;
         padding: 2em;
         margin: 2em;
         border: 1px solid grey;
@@ -34,6 +35,9 @@
         gap: 1em;
         align-items: center;
         margin-bottom: 1em;
+      }
+      .player-container input {
+        width: 100%;
       }
       .score-container {
         display: flex;
@@ -53,9 +57,8 @@
     <main>
       <div class="app-container">
         <div class="player-container">
-          <label id="playerNameLabel" for="playerName">Ny spelare</label>
+          <label id="playerNameLabel" for="playerName">Namn</label>
           <input type="text" name="playerName" id="playerName" />
-          <button id="playerAdd">Lägg till</button>
         </div>
         <div class="score-container" id="playerScores"></div>
         <div class="actions">
@@ -147,7 +150,6 @@
 
       const playerNameInput = document.getElementById("playerName");
       const playerScores = document.getElementById("playerScores");
-      const playerAddButton = document.getElementById("playerAdd");
       const clearButton = document.getElementById("clearScores");
 
       const addPlayer = () => {
@@ -165,7 +167,6 @@
         if (event.key !== enterKey) return;
         addPlayer();
       });
-      playerAddButton.addEventListener("click", addPlayer);
 
       clearButton.addEventListener("click", () => {
         playerScores.replaceChildren();
