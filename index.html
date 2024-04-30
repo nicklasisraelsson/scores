@@ -23,9 +23,9 @@
         border: 1px solid grey;
       }
       .app-container {
-        flex: 1;
+        width: calc(100% - 4em);
         padding: 2em;
-        margin: 2em;
+        margin: 2em 1em;
         border: 1px solid grey;
         border-radius: 1em;
         box-shadow: 0 4px 22px #00000014;
@@ -58,7 +58,7 @@
       <div class="app-container">
         <div class="player-container">
           <label id="playerNameLabel" for="playerName">Namn</label>
-          <input type="text" name="playerName" id="playerName" />
+          <input type="text" name="playerName" id="playerName" maxlength="15" />
         </div>
         <div class="score-container" id="playerScores"></div>
         <div class="actions">
@@ -73,11 +73,7 @@
           align-items: center;
           gap: 1em;
         }
-        .name {
-          max-width: 180px;
-        }
         .score {
-          max-width: 120px;
           margin-left: auto;
           text-align: right;
         }
