@@ -5,100 +5,170 @@
     <meta name="viewport" content="width=device-width" />
     <title>Poäng</title>
     <style>
-      .player-container {
-        align-items: center;
+      html {
+        font: 1rem "Verdana", sans-serif;
       }
-      .flex {
+      main {
+        display: flex;
+        justify-content: center;
+      }
+      button {
+        font-size: inherit;
+      }
+      input,
+      player-score::part(input) {
+        font-size: inherit;
+        border-radius: 4px;
+        outline: none;
+        border: 1px solid grey;
+      }
+      .app-container {
+        padding: 2em;
+        margin: 2em;
+        border: 1px solid grey;
+        border-radius: 1em;
+        box-shadow: 0 4px 22px #00000014;
+      }
+      .player-container {
         display: flex;
         gap: 1em;
+        align-items: center;
+        margin-bottom: 1em;
       }
-      .icon {
-        height: 1em;
-        width: 1em;
+      .score-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
       }
-      .player {
-        margin: 1em;
+      .actions {
+        margin-top: 1em;
+        display: flex;
       }
-      input:invalid {
-        border: 1px solid red;
+      .actions button {
+        margin-left: auto;
       }
     </style>
   </head>
   <body>
     <main>
-      <div class="player-container flex">
-        <label id="playerNameLabel" for="playerName">Ny spelare</label>
-        <input type="text" name="playerName" id="playerName" />
-        <button id="playerAdd">Lägg till</button>
+      <div class="app-container">
+        <div class="player-container">
+          <label id="playerNameLabel" for="playerName">Ny spelare</label>
+          <input type="text" name="playerName" id="playerName" />
+          <button id="playerAdd">Lägg till</button>
+        </div>
+        <div class="score-container" id="playerScores"></div>
+        <div class="actions">
+          <button id="clearScores">Rensa</button>
+        </div>
       </div>
-      <div class="score-container" id="playerScores"></div>
     </main>
-    <script type="module">
+    <template id="player-template">
+      <style>
+        .player {
+          display: flex;
+          align-items: center;
+          gap: 1em;
+        }
+        .name {
+          max-width: 180px;
+        }
+        .score {
+          max-width: 120px;
+          margin-left: auto;
+          text-align: right;
+        }
+        .ellipsis {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        input {
+          width: 3em;
+          text-align: right;
+        }
+        input:invalid {
+          border: 1px solid red;
+        }
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        /* Firefox */
+        input[type="number"] {
+          -moz-appearance: textfield;
+          appearance: textfield;
+        }
+      </style>
+      <div class="player">
+        <div class="name ellipsis"><slot></slot></div>
+        <div class="score ellipsis">0</div>
+        <div class="newScore">
+          <input
+            part="input"
+            type="number"
+            inputmode="numeric"
+            placeholder="0"
+            min="0"
+          />
+        </div>
+      </div>
+    </template>
+    <script type="module" defer>
+      const enterKey = "Enter";
+
+      customElements.define(
+        "player-score",
+        class extends HTMLElement {
+          constructor() {
+            super();
+            const template = document.getElementById("player-template").content;
+            const shadowRoot = this.attachShadow({ mode: "open" });
+            shadowRoot.appendChild(template.cloneNode(true));
+          }
+
+          connectedCallback() {
+            const scoreElement = this.shadowRoot.querySelector(".score");
+            const input = this.shadowRoot.querySelector("input");
+            input.addEventListener("keydown", (event) => {
+              if (event.key !== enterKey) return;
+              const addedScore = +input.value;
+              const existingScore = +scoreElement.textContent;
+              if (isFinite(addedScore) && isFinite(existingScore)) {
+                scoreElement.textContent = existingScore + addedScore;
+                input.value = "";
+              }
+            });
+          }
+        }
+      );
+
       const playerNameInput = document.getElementById("playerName");
       const playerScores = document.getElementById("playerScores");
       const playerAddButton = document.getElementById("playerAdd");
+      const clearButton = document.getElementById("clearScores");
 
-      let players = [];
-
-      const addPlayer = (name) => {
-        const id = Math.max(0, ...players.map((p) => p.id)) + 1;
-
-        players = [...players, { id, name, score: 0 }];
-      };
-
-      const renderPlayers = () => {
-        const playersHtmlString = players.map(
-          (p) =>
-            `<div class="player flex">
-              <div class="name">${p.name}</div>
-              <div id="player${p.id}Score" class="score">${p.score}</div>
-              <div class="newScore">
-                <input
-                  type="number"
-                  name="player${p.id}Input"
-                  id="player${p.id}Input"
-                  inputmode="numeric"
-                  placeholder="0"
-                  min="0"
-                />
-              </div>
-            </div>`
-        );
+      const addPlayer = () => {
+        if (!playerNameInput.value) return;
         const playerRange = document.createRange();
         playerRange.selectNode(playerScores);
         const newPlayerFragment = playerRange.createContextualFragment(
-          `<div>${playersHtmlString.join("")}</div>`
+          `<player-score>${playerNameInput.value}</player-score>`
         );
-        playerScores.replaceChildren(newPlayerFragment.firstChild);
-        players.forEach((player) => {
-          const playerScore = document.getElementById(
-            `player${player.id}Score`
-          );
-          const playerInput = document.getElementById(
-            `player${player.id}Input`
-          );
-          if (!playerInput || !playerScore) return;
-          playerInput.addEventListener("change", () => {
-            const addedScore = +playerInput.value;
-            if (isFinite(addedScore)) {
-              player.score += addedScore;
-            }
-            playerScore.textContent = player.score;
-            playerInput.value = "";
-          });
-        });
+        playerScores.appendChild(newPlayerFragment.firstChild);
+        playerNameInput.value = "";
       };
 
       playerNameInput.addEventListener("keydown", (event) => {
-        if (event.key !== "Enter") return;
-        addPlayer(playerNameInput.value);
-        playerNameInput.value = "";
-        renderPlayers();
+        if (event.key !== enterKey) return;
+        addPlayer();
       });
-      playerAddButton.addEventListener("click", () => {
-        addPlayer(playerNameInput.value);
-        playerNameInput.value = "";
-        renderPlayers();
+      playerAddButton.addEventListener("click", addPlayer);
+
+      clearButton.addEventListener("click", () => {
+        playerScores.replaceChildren();
       });
     </script>
   </body>
