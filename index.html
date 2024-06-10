@@ -61,8 +61,15 @@
     <main>
       <div class="app-container">
         <div class="player-container">
-          <label id="playerNameLabel" for="playerName">Namn</label>
-          <input type="text" name="playerName" id="playerName" maxlength="15" />
+          <form>
+            <label id="playerNameLabel" for="playerName">Namn</label>
+            <input
+              type="text"
+              name="playerName"
+              id="playerName"
+              maxlength="15"
+            />
+          </form>
         </div>
         <div class="score-container" id="playerScores"></div>
         <div class="actions">
@@ -108,7 +115,7 @@
       <div class="player">
         <div class="name ellipsis"><slot></slot></div>
         <div class="score ellipsis">0</div>
-        <div class="newScore">
+        <form class="newScore">
           <input
             part="input"
             type="number"
@@ -116,12 +123,10 @@
             placeholder="0"
             min="0"
           />
-        </div>
+        </form>
       </div>
     </template>
     <script type="module" defer>
-      const enterKey = "Enter";
-
       customElements.define(
         "player-score",
         class extends HTMLElement {
@@ -130,27 +135,32 @@
             const template = document.getElementById("player-template").content;
             const shadowRoot = this.attachShadow({ mode: "open" });
             shadowRoot.appendChild(template.cloneNode(true));
+            this.score = 0;
           }
 
           connectedCallback() {
-            const scoreElement = this.shadowRoot.querySelector(".score");
-            const input = this.shadowRoot.querySelector("input");
-            input.addEventListener("keydown", (event) => {
-              if (event.key !== enterKey) return;
-              const addedScore = +input.value;
-              const existingScore = +scoreElement.textContent;
-              if (isFinite(addedScore) && isFinite(existingScore)) {
-                scoreElement.textContent = existingScore + addedScore;
-                input.value = "";
-              }
-            });
+            this.scoreElement = this.shadowRoot.querySelector(".score");
+            this.form = this.shadowRoot.querySelector("form");
+            this.input = this.shadowRoot.querySelector("input");
+            this.form.addEventListener("submit", this);
+          }
+
+          handleEvent(event) {
+            event.preventDefault();
+            const addedScore = this.input.valueAsNumber;
+            if (isFinite(addedScore)) {
+              this.score += addedScore;
+              this.scoreElement.textContent = this.score;
+              this.input.value = "";
+            }
           }
         }
       );
 
-      const playerNameInput = document.getElementById("playerName");
-      const playerScores = document.getElementById("playerScores");
-      const clearButton = document.getElementById("clearScores");
+      const playerNameInput = document.querySelector("#playerName");
+      const playerScores = document.querySelector("#playerScores");
+      const clearButton = document.querySelector("#clearScores");
+      const addPlayerForm = document.querySelector("form");
 
       const addPlayer = () => {
         if (!playerNameInput.value) return;
@@ -163,8 +173,8 @@
         playerNameInput.value = "";
       };
 
-      playerNameInput.addEventListener("keydown", (event) => {
-        if (event.key !== enterKey) return;
+      addPlayerForm.addEventListener("submit", (event) => {
+        event.preventDefault();
         addPlayer();
       });
 
