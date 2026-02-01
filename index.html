@@ -21,8 +21,7 @@
       font-size: inherit;
     }
 
-    input,
-    player-score::part(input) {
+    input{
       font-size: inherit;
       border-radius: 4px;
       outline: none;
@@ -31,8 +30,8 @@
 
     .app-container {
       width: calc(100% - 4em);
-      padding: 2em;
-      margin: 2em 1em;
+      padding: 1em;
+      margin: 1em;
       border: 1px solid grey;
       border-radius: 1em;
       box-shadow: 0 4px 22px #00000014;
@@ -43,6 +42,10 @@
       gap: 1em;
       align-items: center;
       margin-bottom: 1em;
+    }
+
+    .player-container form {
+      width: 100%;
     }
 
     .player-container input {
