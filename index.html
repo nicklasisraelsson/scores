@@ -1,186 +1,209 @@
 <!DOCTYPE html>
 <html lang="sv">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Poäng</title>
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='100'>🎲</text></svg>"
-    />
-    <style>
-      html {
-        font: 1rem "Verdana", sans-serif;
-      }
-      main {
-        display: flex;
-        justify-content: center;
-      }
-      button {
-        font-size: inherit;
-      }
-      input,
-      player-score::part(input) {
-        font-size: inherit;
-        border-radius: 4px;
-        outline: none;
-        border: 1px solid grey;
-      }
-      .app-container {
-        width: calc(100% - 4em);
-        padding: 2em;
-        margin: 2em 1em;
-        border: 1px solid grey;
-        border-radius: 1em;
-        box-shadow: 0 4px 22px #00000014;
-      }
-      .player-container {
-        display: flex;
-        gap: 1em;
-        align-items: center;
-        margin-bottom: 1em;
-      }
-      .player-container input {
-        width: 100%;
-      }
-      .score-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1em;
-      }
-      .actions {
-        margin-top: 1em;
-        display: flex;
-      }
-      .actions button {
-        margin-left: auto;
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <div class="app-container">
-        <div class="player-container">
-          <form>
-            <label id="playerNameLabel" for="playerName">Namn</label>
-            <input
-              type="text"
-              name="playerName"
-              id="playerName"
-              maxlength="15"
-            />
-          </form>
-        </div>
-        <div class="score-container" id="playerScores"></div>
-        <div class="actions">
-          <button id="clearScores">Rensa</button>
-        </div>
-      </div>
-    </main>
-    <template id="player-template">
-      <style>
-        .player {
-          display: flex;
-          align-items: center;
-          gap: 1em;
-        }
-        .score {
-          margin-left: auto;
-          text-align: right;
-        }
-        .ellipsis {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        input {
-          width: 3em;
-          text-align: right;
-        }
-        input:invalid {
-          border: 1px solid red;
-        }
-        /* Chrome, Safari, Edge, Opera */
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-        /* Firefox */
-        input[type="number"] {
-          -moz-appearance: textfield;
-          appearance: textfield;
-        }
-      </style>
-      <div class="player">
-        <div class="name ellipsis"><slot></slot></div>
-        <div class="score ellipsis">0</div>
-        <form class="newScore">
-          <input
-            part="input"
-            type="number"
-            inputmode="numeric"
-            placeholder="0"
-            min="0"
-          />
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Poäng</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='100'>🎲</text></svg>" />
+  <style>
+    html {
+      font: 1rem "Verdana", sans-serif;
+    }
+
+    main {
+      display: flex;
+      justify-content: center;
+    }
+
+    button {
+      font-size: inherit;
+    }
+
+    input,
+    player-score::part(input) {
+      font-size: inherit;
+      border-radius: 4px;
+      outline: none;
+      border: 1px solid grey;
+    }
+
+    .app-container {
+      width: calc(100% - 4em);
+      padding: 2em;
+      margin: 2em 1em;
+      border: 1px solid grey;
+      border-radius: 1em;
+      box-shadow: 0 4px 22px #00000014;
+    }
+
+    .player-container {
+      display: flex;
+      gap: 1em;
+      align-items: center;
+      margin-bottom: 1em;
+    }
+
+    .player-container input {
+      width: 100%;
+    }
+
+    .add-input {
+      display: flex;
+    }
+
+    .add-input input {
+      border-right: none;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .add-input button {
+      border: 1px solid grey;
+      border-radius: 4px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    .score-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+
+    .actions {
+      margin-top: 1em;
+      display: flex;
+    }
+
+    .actions button {
+      margin-left: auto;
+    }
+
+    input:invalid {
+      border: 1px solid red;
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type="number"] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+      width: 3em;
+      text-align: right;
+    }
+
+    .player {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+    }
+
+    .score {
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .ellipsis {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="app-container">
+      <div class="player-container">
+        <form>
+          <label id="playerNameLabel" for="playerName">Namn</label>
+
+          <div class="add-input"><input type="text" name="playerName" id="playerName" maxlength="15" />
+            <button>+</button>
+          </div>
         </form>
       </div>
-    </template>
-    <script type="module" defer>
-      customElements.define(
-        "player-score",
-        class extends HTMLElement {
-          constructor() {
-            super();
-            const template = document.getElementById("player-template").content;
-            const shadowRoot = this.attachShadow({ mode: "open" });
-            shadowRoot.appendChild(template.cloneNode(true));
-            this.score = 0;
-          }
+      <div class="score-container" id="playerScores"></div>
+      <div class="actions">
+        <button id="clearScores">Rensa</button>
+      </div>
+    </div>
+  </main>
+  <script type="module" defer>
+    customElements.define(
+      "player-score",
+      class extends HTMLElement {
+        constructor() {
+          super();
+          this.score = 0;
+        }
 
-          connectedCallback() {
-            this.scoreElement = this.shadowRoot.querySelector(".score");
-            this.form = this.shadowRoot.querySelector("form");
-            this.input = this.shadowRoot.querySelector("input");
-            this.form.addEventListener("submit", this);
-          }
+        connectedCallback() {
+          const name = this.dataset.name;
+          this.innerHTML = `
+              <div class="player">
+                <div class="name ellipsis">
+                  ${name}
+                </div>
+                <div class="score ellipsis">0</div>
+                <form class="newScore">
+                  <div class="add-input">
+                    <input part="input" type="number" inputmode="numeric" placeholder="0" min="0" />
+                    <button>+</button>
+                  </div>
+                </form>
+              </div>`
+          this.scoreElement = this.querySelector(".score");
+          this.form = this.querySelector("form");
+          this.input = this.querySelector("input");
+          this.form.addEventListener("submit", this);
+        }
 
-          handleEvent(event) {
-            event.preventDefault();
-            const addedScore = this.input.valueAsNumber;
-            if (isFinite(addedScore)) {
-              this.score += addedScore;
-              this.scoreElement.textContent = this.score;
-              this.input.value = "";
-            }
+        handleEvent(event) {
+          event.preventDefault();
+          const addedScore = this.input.valueAsNumber;
+          if (isFinite(addedScore)) {
+            this.score += addedScore;
+            this.scoreElement.textContent = this.score;
+            this.input.value = "";
           }
         }
+      }
+    );
+
+    const playerNameInput = document.querySelector("#playerName");
+    const playerScores = document.querySelector("#playerScores");
+    const clearButton = document.querySelector("#clearScores");
+    const addPlayerForm = document.querySelector("form");
+
+    const addPlayer = () => {
+      if (!playerNameInput.value) return;
+      const playerRange = document.createRange();
+      playerRange.selectNode(playerScores);
+      const newPlayerFragment = playerRange.createContextualFragment(
+        `<player-score data-name="${playerNameInput.value}"></player-score>`
       );
+      playerScores.appendChild(newPlayerFragment.firstChild);
+      playerNameInput.value = "";
+    };
 
-      const playerNameInput = document.querySelector("#playerName");
-      const playerScores = document.querySelector("#playerScores");
-      const clearButton = document.querySelector("#clearScores");
-      const addPlayerForm = document.querySelector("form");
+    addPlayerForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      addPlayer();
+    });
 
-      const addPlayer = () => {
-        if (!playerNameInput.value) return;
-        const playerRange = document.createRange();
-        playerRange.selectNode(playerScores);
-        const newPlayerFragment = playerRange.createContextualFragment(
-          `<player-score>${playerNameInput.value}</player-score>`
-        );
-        playerScores.appendChild(newPlayerFragment.firstChild);
-        playerNameInput.value = "";
-      };
+    clearButton.addEventListener("click", () => {
+      playerScores.replaceChildren();
+    });
+  </script>
+</body>
 
-      addPlayerForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        addPlayer();
-      });
-
-      clearButton.addEventListener("click", () => {
-        playerScores.replaceChildren();
-      });
-    </script>
-  </body>
 </html>
